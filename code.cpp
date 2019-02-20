@@ -20,6 +20,7 @@ public:
     nrow = r;
     ncol = c;
     matr = new int *[r];
+
     for (int i = 0; i < r; i++) {
       matr[i] = new int[c];
       for (int j = 0; j < c; j++)
@@ -39,7 +40,7 @@ public:
   // Methods
 
   myMatrix add(const myMatrix &obj) {
-    if (this->nrow != obj.nrow || this->ncol != obj.ncol)
+    if ((this->nrow != obj.nrow) || (this->ncol != obj.ncol))
       return *this;
 
     myMatrix output(*this);
@@ -52,27 +53,35 @@ public:
   }
 
   myMatrix mul(const myMatrix &obj) {
-    // TODO: Check if number is 0?
-    if (this->nrow != obj.nrow || this->ncol != obj.ncol)
+    if ((this->nrow != obj.nrow) || (this->ncol != obj.ncol))
       return *this;
 
     myMatrix output(*this);
+
     for (int i = 0; i < nrow; i++)
       for (int j = 0; j < ncol; j++)
         output.matr[i][j] *= obj.matr[i][j];
+
     return output;
   }
 
   myMatrix mul(int scalar) {
     myMatrix output(*this);
+
     for (int i = 0; i < nrow; i++)
       for (int j = 0; j < ncol; j++)
         output.matr[i][j] *= scalar;
+
     return output;
   }
 
   const myMatrix &mulAndUpdate(int scalar) {
-    // TODO: If scalar is 0, set matr[i] = {0} (Shorthand)
+    if (!scalar) {
+      for (int i = 0; i < nrow; i++)
+        matr[i] = {0};
+      return *this;
+    }
+
     for (int i = 0; i < nrow; i++)
       for (int j = 0; j < ncol; j++)
         matr[i][j] *= scalar;
@@ -82,9 +91,11 @@ public:
 
   const myMatrix pre_increment() {
     myMatrix output(*this);
+
     for (int i = 0; i < nrow; i++)
       for (int j = 0; j < ncol; j++)
         ++output.matr[i][j];
+
     return output;
   }
 
@@ -92,6 +103,7 @@ public:
     for (int i = 0; i < nrow; i++)
       for (int j = 0; j < ncol; j++)
         matr[i][j]++;
+
     return *this;
   }
 
@@ -137,19 +149,19 @@ public:
   int getCols() { return ncol; }
 
   int getElement(int r, int c) {
-    if (matr[r][c])
+    if ((matr[r][c] && r < this->nrow) && (c < this->ncol))
       return matr[r][c];
 
     return 0;
   }
 
-  // TODO: Element within indices (rows and columns)?
   void setElement(int r, int c, int val) {
-    if (r < this->nrow && c < this->ncol)
+    if ((r < this->nrow) &&
+        (c < this->ncol)) // bound check for rows and columns for matrix
       matr[r][c] = val;
   }
-  // Destructor
 
+  // Destructor
   ~myMatrix() {
 
     for (int i = 0; i < nrow; i++)
@@ -172,8 +184,8 @@ myMatrix readMatrix(char filename[]) {
   fin.ignore();
 
   myMatrix obj(r, c, 0);
-  // cout << "Row Count: " << obj.getRows();
   int n;
+
   while (fin >> n) {
     obj.setElement(rc, cc++, n);
     if (cc == c) // When temp column count (cc) becomes equal to pre-defined
@@ -183,12 +195,14 @@ myMatrix readMatrix(char filename[]) {
       rc++;   // New line indicates a new row
     }
   }
+
   return obj;
 }
 
 void printMatrix(myMatrix &obj) {
   cout << "Matrix is : \n\n";
   int r = obj.getRows(), c = obj.getCols();
+
   for (int i = 0; i < r; i++) {
     for (int j = 0; j < c; j++)
       cout << " " << obj.getElement(i, j) << "\t";
