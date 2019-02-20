@@ -1,7 +1,6 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
-// TODO: Error Handling, Code testing
 
 using namespace std;
 
@@ -11,11 +10,14 @@ private:
 
 public:
   // Constructors
+
+  // Default Constructor
   myMatrix() {
     matr = nullptr;
     nrow = ncol = 0;
   }
 
+  // Parametric Constructor
   myMatrix(int r, int c, int val = 0) {
     nrow = r;
     ncol = c;
@@ -28,6 +30,7 @@ public:
     }
   }
 
+  // Deep Copy Constructor
   myMatrix(const myMatrix &obj) {
     matr = new int *[obj.nrow];
     for (int i = 0; i < obj.nrow; i++) {
@@ -38,8 +41,9 @@ public:
   }
 
   // Methods
-
   myMatrix add(const myMatrix &obj) {
+    // When the order (rows * columns) of the parametric object is not equal to
+    // instance's order.
     if ((this->nrow != obj.nrow) || (this->ncol != obj.ncol))
       return *this;
 
@@ -133,7 +137,17 @@ public:
   }
 
   // TODO: Implementation
-  bool submatrix(const myMatrix &obj);
+  // https://youtu.be/KvzS03KB2X8
+  bool submatrix(const myMatrix &obj) {
+    /* Sample test cases:
+    O:  1 2 3          M: 2 3 | M: 1 2 3 | M: 4 5 6
+        4 5 6             5 6
+
+    */
+
+    if (obj.getRows() > nrow || obj.getCols() > ncols) // object is super-matrix
+      return 0;
+  }
 
   bool isIdentity() {
     for (int i = 0; i < nrow; i++)
