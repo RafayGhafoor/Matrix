@@ -174,8 +174,7 @@ myMatrix readMatrix(char filename[]) {
   myMatrix obj(r, c, 0);
   // cout << "Row Count: " << obj.getRows();
   int n;
-  while (!fin.eof()) {
-    fin >> n;
+  while (fin >> n) {
     obj.setElement(rc, cc++, n);
     if (cc == c) // When temp column count (cc) becomes equal to pre-defined
                  // column count (c)
