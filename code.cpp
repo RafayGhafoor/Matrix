@@ -133,9 +133,17 @@ public:
   }
 
   const myMatrix &assign(const myMatrix &obj) {
-    this->matr = obj.matr;
+    this->matr = new int *[obj.nrow];
+
+    for (int i = 0; i < obj.nrow; i++) {
+      this->matr[i] = new int[obj.ncol];
+      for (int j = 0; j < obj.ncol; j++)
+        this->matr[i][j] = obj.matr[i][j];
+    }
+
     this->nrow = obj.nrow;
     this->ncol = obj.ncol;
+
     return *this;
   }
 
@@ -228,11 +236,4 @@ void printMatrix(myMatrix &obj) {
       cout << " " << obj.getElement(i, j) << "\t";
     cout << "\n";
   }
-}
-
-int main() {
-  char fn[] = "test.txt";
-  myMatrix stream = readMatrix(fn);
-  myMatrix test = stream.pre_increment();
-  printMatrix(test);
 }
