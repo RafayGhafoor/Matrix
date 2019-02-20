@@ -32,7 +32,11 @@ public:
 
   // Deep Copy Constructor
   myMatrix(const myMatrix &obj) {
+    nrow = obj.nrow;
+    ncol = obj.ncol;
+
     matr = new int *[obj.nrow];
+
     for (int i = 0; i < obj.nrow; i++) {
       matr[i] = new int[obj.ncol];
       for (int j = 0; j < obj.ncol; j++)
@@ -95,10 +99,9 @@ public:
 
   const myMatrix pre_increment() {
     myMatrix output(*this);
-
     for (int i = 0; i < nrow; i++)
       for (int j = 0; j < ncol; j++)
-        ++output.matr[i][j];
+        output.matr[i][j] += 1;
 
     return output;
   }
@@ -138,16 +141,18 @@ public:
 
   // TODO: Implementation
   // https://youtu.be/KvzS03KB2X8
-  bool submatrix(const myMatrix &obj) {
-    /* Sample test cases:
-    O:  1 2 3          M: 2 3 | M: 1 2 3 | M: 4 5 6
-        4 5 6             5 6
+  // bool submatrix(const myMatrix &obj)
+  // {
+  //   /* Sample test cases:
+  //   O:  1 2 3          M: 2 3 | M: 1 2 3 | M: 4 5 6
+  //       4 5 6             5 6
 
-    */
+  //   */
 
-    if (obj.getRows() > nrow || obj.getCols() > ncols) // object is super-matrix
-      return 0;
-  }
+  //   if (obj.getRows() > nrow || obj.getCols() > ncol) // object is
+  //   super-matrix
+  //     return 0;
+  // }
 
   bool isIdentity() {
     for (int i = 0; i < nrow; i++)
@@ -216,6 +221,7 @@ myMatrix readMatrix(char filename[]) {
 void printMatrix(myMatrix &obj) {
   cout << "Matrix is : \n\n";
   int r = obj.getRows(), c = obj.getCols();
+  cout << r << " " << c << endl;
 
   for (int i = 0; i < r; i++) {
     for (int j = 0; j < c; j++)
@@ -227,5 +233,6 @@ void printMatrix(myMatrix &obj) {
 int main() {
   char fn[] = "test.txt";
   myMatrix stream = readMatrix(fn);
-  printMatrix(stream);
+  myMatrix test = stream.pre_increment();
+  printMatrix(test);
 }
