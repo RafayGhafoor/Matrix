@@ -1,180 +1,194 @@
+#include <cstring>
 #include <fstream>
 #include <iostream>
-
 // TODO: Error Handling, Code testing
 
-class myMatrix
-{
+using namespace std;
+
+class myMatrix {
 private:
   int **matr, nrow, ncol;
 
 public:
   // Constructors
-  myMatrix()
-  {
+  myMatrix() {
     matr = nullptr;
     nrow = ncol = 0;
   }
 
-  myMatrix(int r, int c, int val = 0)
-  {
+  myMatrix(int r, int c, int val = 0) {
+    nrow = r;
+    ncol = c;
     matr = new int *[r];
-    for (i = 0; i < r; i++)
-    {
+    for (int i = 0; i < r; i++) {
       matr[i] = new int[c];
-      for (j = 0; j < c; j++)
+      for (int j = 0; j < c; j++)
         matr[i][j] = val;
     }
   }
 
-  myMatrix(const myMatrix &obj)
-  {
-    matr = new int[obj.r];
-    for (i = 0; i < obj.r; i++)
-    {
-      matr[i] = new int[obj.c];
-      for (j = 0; j < obj.c; j++)
+  myMatrix(const myMatrix &obj) {
+    matr = new int *[obj.nrow];
+    for (int i = 0; i < obj.nrow; i++) {
+      matr[i] = new int[obj.ncol];
+      for (int j = 0; j < obj.ncol; j++)
         matr[i][j] = obj.matr[i][j];
     }
   }
 
   // Methods
 
-  myMatrix add(const myMatrix &obj)
-  {
+  myMatrix add(const myMatrix &obj) {
     // TODO: If rows and columns are equal, do addition
-    myMatrix output(this);
-    for (i = 0; i < nrows; i++)
-      for (j = 0; j < ncols; j++)
+    myMatrix output(*this);
+    for (int i = 0; i < nrow; i++)
+      for (int j = 0; j < ncol; j++)
         output.matr[i][j] += obj.matr[i][j];
     return output;
   }
 
-  myMatrix mul(const myMatrix &obj)
-  {
+  myMatrix mul(const myMatrix &obj) {
     // TODO: Check if number is 0?
     // TODO: If rows and columns are equal, do multiplication
-    myMatrix output(this);
-    for (i = 0; i < nrows; i++)
-      for (j = 0; j < ncols; j++)
+    myMatrix output(*this);
+    for (int i = 0; i < nrow; i++)
+      for (int j = 0; j < ncol; j++)
         output.matr[i][j] *= obj.matr[i][j];
     return output;
   }
 
-  myMatrix mul(int scalar)
-  {
+  myMatrix mul(int scalar) {
     // TODO: If rows and columns are equal, do multiplication
-    myMatrix output(this);
-    for (i = 0; i < nrows; i++)
-      for (j = 0; j < ncols; j++)
-        output[i][j] *= scalar;
+    myMatrix output(*this);
+    for (int i = 0; i < nrow; i++)
+      for (int j = 0; j < ncol; j++)
+        output.matr[i][j] *= scalar;
     return output;
   }
 
-  const myMatrix &mulAndUpdate(int scalar)
-  {
+  const myMatrix &mulAndUpdate(int scalar) {
     // TODO: If rows and columns are equal, do multiplication
-    for (i = 0; i < nrows; i++)
-      for (j = 0; j < ncols; j++)
+    for (int i = 0; i < nrow; i++)
+      for (int j = 0; j < ncol; j++)
         matr[i][j] *= scalar;
-    return matr;
+    return *this;
   }
 
-  const myMatrix &pre_increment()
-  {
-    myMatrix output(this);
-    for (i = 0; i < nrows; i++)
-      for (j = 0; j < ncols; j++)
-        ++output[i][j];
+  const myMatrix pre_increment() {
+    myMatrix output(*this);
+    for (int i = 0; i < nrow; i++)
+      for (int j = 0; j < ncol; j++)
+        ++output.matr[i][j];
     return output;
   }
 
-  myMatrix post_increment()
-  {
-    for (i = 0; i < nrows; i++)
-      for (j = 0; j < ncols; j++)
+  myMatrix post_increment() {
+    for (int i = 0; i < nrow; i++)
+      for (int j = 0; j < ncol; j++)
         matr[i][j]++;
-    return matr;
+    return *this;
   }
 
-  const myMatrix &negate()
-  {
+  const myMatrix &negate() {
     // TODO: No need to multiply with -1, if the entry is 0
-    for (i = 0; i < nrows; i++)
-      for (j = 0; j < ncols; j++)
-        mat[i][j] *= -1;
-    return mat;
+    for (int i = 0; i < nrow; i++)
+      for (int j = 0; j < ncol; j++)
+        matr[i][j] *= -1;
+    return *this;
   }
 
-  const myMatrix &transpose()
-  {
+  const myMatrix &transpose() {
     // TODO: order check
-    for (i = 0; i < nrows; i++)
-      for (j = 0; j < ncols; j++)
+    for (int i = 0; i < nrow; i++)
+      for (int j = 0; j < ncol; j++)
         if (i != j)
-          swap(mat[i][j], mat[j][j]);
+          swap(matr[i][j], matr[j][j]);
 
-    return mat;
+    return *this;
   }
 
-  const myMatrix &assign(const myMatrix &obj)
-  {
+  const myMatrix &assign(const myMatrix &obj) {
     this->matr = obj.matr;
-    this->nrows = obj.nrows;
-    this->ncols = obj.ncols;
-    return this;
+    this->nrow = obj.nrow;
+    this->ncol = obj.ncol;
+    return *this;
   }
 
   // TODO: Implementation
   bool submatrix(const myMatrix &obj);
 
-  bool isIdentity()
-  {
-    for (i = 0; i < nrows; i++)
-      for (j = 0; j < ncols; j++)
-        if ((mat[i][j] != 1) && (mat[j][i] != 0))
+  bool isIdentity() {
+    for (int i = 0; i < nrow; i++)
+      for (int j = 0; j < ncol; j++)
+        if ((matr[i][j] != 1) && (matr[j][i] != 0))
           return 0;
     return 1;
   }
 
   // Getters and Setters
-  int getRows() { return nrows; }
-  int getCols() { return ncols; }
-  int getElement(int r, int c)
-  {
+  int getRows() { return nrow; }
+  int getCols() { return ncol; }
+  int getElement(int r, int c) {
     if (matr[r][c])
       return matr[r][c];
     return 0;
   }
 
   // TODO: Element within indices (rows and columns)?
-  int setElement(int r, int c, int val) { mat[r][c] = val; }
+  void setElement(int r, int c, int val) { matr[r][c] = val; }
 
   // Destructor
-  ~myMatrix()
-  {
+  ~myMatrix() {
 
-    for (i = 0; i < nrows; i++)
-      if (mat[i])
-        delete[] mat[i];
+    for (int i = 0; i < nrow; i++)
+      if (matr[i])
+        delete[] matr[i];
 
-    if (mat)
-    {
-      delete[] mat;
-      mat = nullptr;
+    if (matr) {
+      delete[] matr;
+      matr = nullptr;
     }
   }
 };
 
-myMatrix readMatrix(char filename[]) { ifstream fin(filename); }
+myMatrix readMatrix(char filename[]) {
+  ifstream fin(filename);
+  int r, c, rc, cc;
+  rc = cc = 0;
+  fin >> r;
+  fin >> c;
+  fin.ignore();
 
-void printMatrix(const myMatrix &obj)
-{
+  myMatrix obj(r, c, 0);
+  // cout << "Row Count: " << obj.getRows();
+  char temp[200];
+  int num;
+
+  while (fin.getline(temp, 200)) {
+    for (int i = 0; temp[i] != 0; i++) {
+      if (temp[i] != ' ' && temp[i] != '\n') {
+        num = temp[i] - 48;
+        obj.setElement(rc, cc++, num);
+      }
+    }
+    rc++; // New line indicates a new row
+  }
+  return obj;
+}
+
+void printMatrix(myMatrix &obj) {
   cout << "\n Matrix is : \n\n";
-  for (int i = 0; i < obj.nrows; i++)
-  {
-    for (int j = 0; j < obj.ncols; j++)
-      cout << " " << a[i][j] << "\t";
+  int r = obj.getRows(), c = obj.getCols();
+  cout << "Columns are: " << c << endl;
+  for (int i = 0; i < r; i++) {
+    for (int j = 0; j < c; j++)
+      cout << " " << obj.getElement(i, j) << "\t";
     cout << "\n";
   }
+}
+
+int main() {
+  char fn[] = "test.txt";
+  myMatrix stream = readMatrix(fn);
+  printMatrix(stream);
 }
