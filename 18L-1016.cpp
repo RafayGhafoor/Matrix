@@ -45,7 +45,7 @@ public:
   }
 
   // Methods
-  myMatrix add(const myMatrix &obj) {
+  const myMatrix add(const myMatrix &obj) {
     // When the order (rows * columns) of the parametric object is not equal to
     // instance's order.
     if ((this->nrow != obj.nrow) || (this->ncol != obj.ncol))
@@ -106,7 +106,7 @@ public:
     return output;
   }
 
-  myMatrix post_increment() {
+  const myMatrix &post_increment() {
     for (int i = 0; i < nrow; i++)
       for (int j = 0; j < ncol; j++)
         matr[i][j]++;
@@ -148,25 +148,29 @@ public:
   }
 
   // TODO: Implementation
-  // https://youtu.be/KvzS03KB2X8
-  // bool submatrix(const myMatrix &obj)
-  // {
-  //   /* Sample test cases:
-  //   O:  1 2 3          M: 2 3 | M: 1 2 3 | M: 4 5 6
-  //       4 5 6             5 6
+  bool submatrix(const myMatrix &obj) {
+    int s_row, s_col,
+        match_count = 0; // Declaration of start row and start column
 
-  //   */
+    if ((obj.nrow > nrow) || (obj.ncol > ncol)) // object is super - matrix
+      return 0;
 
-  //   if (obj.getRows() > nrow || obj.getCols() > ncol) // object is
-  //   super-matrix
-  //     return 0;
-  // }
+    for (int i = 0, j = 0, x = 0, y = 0; i < nrow && j < ncol; i++, j++) {
+      if (obj.matr[x][y++] == matr[i][j])
+        cout << obj.matr[i][j] << endl;
+
+      // x++;
+      y = 0;
+    }
+    return 1;
+  }
 
   bool isIdentity() {
     for (int i = 0; i < nrow; i++)
       for (int j = 0; j < ncol; j++)
         if ((matr[i][j] != 1) && (matr[j][i] != 0))
           return 0;
+
     return 1;
   }
 
@@ -229,11 +233,22 @@ myMatrix readMatrix(char filename[]) {
 void printMatrix(myMatrix &obj) {
   cout << "Matrix is : \n\n";
   int r = obj.getRows(), c = obj.getCols();
-  cout << r << " " << c << endl;
 
   for (int i = 0; i < r; i++) {
     for (int j = 0; j < c; j++)
-      cout << " " << obj.getElement(i, j) << "\t";
+      cout << " " << obj.getElement(i, j);
     cout << "\n";
   }
+}
+
+int main() {
+  char fn[] = "test.txt";
+  char fn1[] = "test1.txt";
+
+  myMatrix t = readMatrix(fn);
+  myMatrix u = readMatrix(fn1);
+
+  t.submatrix(u);
+
+  printMatrix(t);
 }
