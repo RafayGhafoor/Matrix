@@ -5,6 +5,7 @@
 using namespace std;
 
 class myMatrix {
+
 private:
   int **matr, nrow, ncol;
 
@@ -175,11 +176,11 @@ public:
   }
 
   // Getters and Setters
-  int getRows() { return nrow; }
+  int getRows() const { return nrow; }
 
-  int getCols() { return ncol; }
+  int getCols() const { return ncol; }
 
-  int getElement(int r, int c) {
+  int getElement(int r, int c) const {
     if ((matr[r][c] && r < this->nrow) && (c < this->ncol))
       return matr[r][c];
 
@@ -230,7 +231,7 @@ myMatrix readMatrix(char filename[]) {
   return obj;
 }
 
-void printMatrix(myMatrix &obj) {
+void printMatrix(const myMatrix &obj) {
   cout << "Matrix is : \n\n";
   int r = obj.getRows(), c = obj.getCols();
 
@@ -248,7 +249,7 @@ int main() {
   myMatrix t = readMatrix(fn);
   myMatrix u = readMatrix(fn1);
 
-  t.submatrix(u);
+  // t.submatrix(u);
 
   printMatrix(t);
 }
