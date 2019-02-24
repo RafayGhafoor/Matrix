@@ -10,15 +10,15 @@ private:
   int **matr, nrow, ncol;
 
 public:
-  // Constructors
+  // ***Constructors***
 
-  // Default Constructor
+  // *Default Constructor
   myMatrix() {
     matr = nullptr;
     nrow = ncol = 0;
   }
 
-  // Parametric Constructor
+  // *Parametric Constructor
   myMatrix(int r, int c, int val = 0) {
     nrow = r;
     ncol = c;
@@ -31,7 +31,7 @@ public:
     }
   }
 
-  // Deep Copy Constructor
+  // *Deep Copy Constructor
   myMatrix(const myMatrix &obj) {
     nrow = obj.nrow;
     ncol = obj.ncol;
@@ -45,7 +45,7 @@ public:
     }
   }
 
-  // Methods
+  // *Methods
   const myMatrix add(const myMatrix &obj) {
     // When the order (rows * columns) of the parametric object is not equal to
     // instance's order.
@@ -98,21 +98,22 @@ public:
     return *this;
   }
 
-  const myMatrix pre_increment() {
-    myMatrix output(*this);
+  const myMatrix &pre_increment() {
+
     for (int i = 0; i < nrow; i++)
       for (int j = 0; j < ncol; j++)
-        output.matr[i][j] += 1;
+        matr[i][j] += 1;
 
-    return output;
+    return *this;
   }
 
-  const myMatrix &post_increment() {
+  const myMatrix post_increment() {
+    myMatrix temp(*this);
     for (int i = 0; i < nrow; i++)
       for (int j = 0; j < ncol; j++)
         matr[i][j]++;
 
-    return *this;
+    return temp;
   }
 
   const myMatrix &negate() {
@@ -153,7 +154,8 @@ public:
     int s_row, s_col,
         match_count = 0; // Declaration of start row and start column
 
-    if ((obj.nrow > nrow) || (obj.ncol > ncol)) // object is super - matrix
+    if ((obj.nrow > nrow) ||
+        (obj.ncol > ncol)) // object is super - matrix (not a submatrix)
       return 0;
 
     for (int i = 0, j = 0, x = 0, y = 0; i < nrow && j < ncol; i++, j++) {
@@ -248,6 +250,7 @@ int main() {
 
   myMatrix t = readMatrix(fn);
   myMatrix u = readMatrix(fn1);
+  u.transpose();
 
   // t.submatrix(u);
 
