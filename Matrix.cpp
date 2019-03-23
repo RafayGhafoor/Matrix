@@ -73,11 +73,14 @@ public:
     if ((this->nrow != obj.nrow) || (this->ncol != obj.ncol))
       return *this;
 
-    myMatrix output(*this);
-
+    // 4 12
+    // 12 24
+    myMatrix output(nrow, ncol, 0);
     for (int i = 0; i < nrow; i++)
       for (int j = 0; j < ncol; j++)
-        output.matr[i][j] *= obj.matr[i][j];
+
+        for (int k = i; k < obj.nrow; k++)
+          output.matr[i][j] += this->matr[i][j] * obj.matr[k][i];
 
     return output;
   }
@@ -141,32 +144,11 @@ public:
 
   const myMatrix &transpose()
   {
-    if (nrow != ncol)
-    {
-      myMatrix temp(ncol, nrow, 0);
-      int x = 0, y = 0;
-      for (int i = 0; i < nrow; i++)
-      {
-        for (int j = 0; j < ncol && x < temp.nrow; j++)
-        {
-          if (y == temp.ncol)
-          {
-            y = 0;
-            x++;
-          }
-          temp.matr[x][y++] = matr[i][j];
-        }
-      }
-      assign(temp);
-    }
-    else
-    {
-      for (int i = 0; i < nrow; i++)
-        for (int j = 0; j < ncol; j++)
-          if (i < j)
-            swap(matr[i][j], matr[j][i]);
-    }
-
+    myMatrix temp(ncol, nrow, 0);
+    for (int i = 0; i < ncol; i++)
+      for (int j = 0; j < nrow; j++)
+        temp.matr[i][j] = matr[j][i];
+    assign(temp);
     return *this;
   }
 
@@ -187,7 +169,6 @@ public:
     return *this;
   }
 
-  // TODO: Implementation
   bool submatrix(const myMatrix &obj)
   {
     int s_row, s_col,
@@ -200,9 +181,7 @@ public:
     for (int i = 0, j = 0, x = 0, y = 0; i < nrow && j < ncol; i++, j++)
     {
       if (obj.matr[x][y++] == matr[i][j])
-        cout << obj.matr[i][j] << endl;
-
-      // x++;
+        return 0;
       y = 0;
     }
     return 1;
@@ -241,13 +220,12 @@ public:
   // Destructor
   ~myMatrix()
   {
-
-    for (int i = 0; i < nrow; i++)
-      if (matr[i])
-        delete[] matr[i];
-
     if (matr)
     {
+      for (int i = 0; i < nrow; i++)
+        if (matr[i])
+          delete[] matr[i];
+
       delete[] matr;
       matr = nullptr;
     }
@@ -295,14 +273,63 @@ void printMatrix(const myMatrix &obj)
 
 int main()
 {
-  char fn[] = "test.txt";
-  // char fn1[] = "test1.txt";
+  char name[] = "test.txt";
+  myMatrix *a = new myMatrix();
+  myMatrix *b = new myMatrix(3, 3, 3);
+  myMatrix *c = new myMatrix(readMatrix(name));
+  myMatrix *d = new myMatrix(3, 3, 1);
 
-  myMatrix t = readMatrix(fn);
-  t.transpose();
-  // myMatrix u = readMatrix(fn1);
+  cout << "Matrix B:\n";
+  printMatrix(*b);
+  cout << "\n\n"
+       << endl;
 
-  // t.submatrix(u);
+  cout << "Matrix C:\n";
+  printMatrix(*c);
+  cout << "\n\n"
+       << endl;
 
-  printMatrix(t);
+  cout << "B add C:\n";
+  printMatrix(b->add(*c));
+
+  cout << "B mul 2:\n";
+  printMatrix((b->mul(2)));
+
+  cout << "B mul C:\n";
+  printMatrix((b->mul(*c)));
+
+  cout << "B mul and update 2:\n";
+  printMatrix(b->mulAndUpdate(2));
+
+  cout << "D Pre, post increment:\n";
+  d->pre_increment();
+  printMatrix(*d);
+  d->post_increment();
+  printMatrix(*d);
+
+  cout << "D is ID:\n";
+  cout << d->isIdentity();
+
+  cout << "\nD negate:\n";
+  printMatrix(d->negate());
+
+  cout << "D transpose:\n";
+  printMatrix(d->transpose());
+
+  // check assign manually
+
+  // cout << "SubMatrix:\n";
+  // cout << d->submatrix(*a);
+
+  cout << "getRows:";
+  cout << d->getRows() << endl;
+
+  cout << "getCols:";
+  cout << d->getCols() << endl;
+
+  cout << "getElement:";
+  cout << d->getElement(1, 1) << endl;
+
+  cout << "setElement:";
+  d->setElement(1, 1, -5);
 }
